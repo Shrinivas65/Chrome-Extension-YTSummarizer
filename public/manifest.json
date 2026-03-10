@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome-extension-ytsummarizer",
+  "version": "1.0",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://api.openai.com/*",
+    "https://www.youtube.com/*"
+  ],
+  
+  
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "content_scripts": [
+    { 
+      "resources": ["*.css", "*.js", "*.png"],
+      "matches": [
+        "https://www.youtube.com/watch?v=*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ]
+}

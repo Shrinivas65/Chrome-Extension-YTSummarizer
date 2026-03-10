@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Production Build Output
+public/*.js
+public/*.map
+public/*.css
+!public/manifest.json
+!public/index.html
+
+# Environment Variables (CRITICAL: Do not leak your API keys)
+.env
+.env.local
+.env.*.local
+
+# IDE / System Files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
