@@ -42,9 +42,16 @@ module.exports = {
       filename: 'popup.html',
       chunks: ['popup'],
     }),
-    new webpack.DefinePlugin({
-      'process.env': JSON.stringify(process.env),
+   
+    new Dotenv({
+      path: './.env', // Path to your .env file
+      safe: false,    // Set to true if you want to load .env.example
+      systemvars: true // IMPORTANT: This allows you to also use system variables
     }),
+  
+    // new webpack.DefinePlugin({
+    //   'process.env': JSON.stringify(process.env),
+    // }),
   ],
 };
 

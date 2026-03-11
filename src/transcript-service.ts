@@ -15,7 +15,6 @@ function convertSecondsToMinutes(seconds: string | number): string {
   const minutes = Math.floor(totalSeconds / 60);
   const remainingSeconds = Math.floor(totalSeconds % 60);
 
-  
   const formattedSeconds = remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
 
   return `${minutes}:${formattedSeconds}`;
@@ -55,14 +54,14 @@ export async function getYouTubeTranscript(videoId: string): Promise<string | nu
             return null;
         }
 
-        
+   
         const sortedCaptionTracks = sortCaptionsByLanguage(captionTracks, 'en'); // 'en' is safer for languageCode
-
+console.log(sortedCaptionTracks)
         const firstCaptionTrack = sortedCaptionTracks[0];
 
       
         const XMLTranscript = await getXMLTranscript(firstCaptionTrack.baseUrl);
-
+console.log(XMLTranscript);
         const formattedTranscript = XMLTranscript.map(item => ({
             ...item,
             start: convertSecondsToMinutes(item.start),
@@ -97,7 +96,7 @@ async function getCaptionTracks(videoId: string, html: string): Promise<CaptionT
            
             languageCode: track.languageCode
         }));
-
+        console.log(captionTracks);
         return captionTracks;
     } catch (error) {
         console.error("Error parsing caption tracks:", error);
