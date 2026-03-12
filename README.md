@@ -1,55 +1,78 @@
-# Chrome-Extension-YTSummarizer
-Chrome extension that inserts side bar as UI for summarizing you-tube video . Build using typescript , node , express and GPT.
 
-A professional Chrome Extension built with React, TypeScript, and Webpack that uses Google Gemini to summarize YouTube videos in real-time.
 
-🛠 Project Structure
-src/content.ts: The "brains" that interact with the YouTube DOM and inject the sidebar.
+---
 
-src/transcript-service.ts: Handles fetching and parsing YouTube's XML transcripts.
+# 📺 Chrome-Extension-YTSummarizer
 
-src/components/Sidebar.tsx: The React-based UI for the AI interaction.
+A professional Chrome Extension built with **React**, **TypeScript**, and **Webpack** that integrates a custom sidebar into the YouTube interface to provide real-time AI video summaries using **Google Gemini 2.0 Flash-Lite**.
 
-src/open-ai.ts: Handles the communication with the Gemini 2.0 Flash-Lite API.
+---
 
-🏗 Installation & Setup
-1. Prerequisites
-Ensure you have Node.js installed (v18 or higher recommended).
+## 📂 Project Structure
 
-2. Environment Variables
-Create a .env file in the root directory (this is where Webpack will look for your key):
+* **`src/content.ts`** The core logic that monitors YouTube's DOM, detects video changes, and handles the injection of the React sidebar.
+* **`src/transcript-service.ts`** A dedicated service for scraping YouTube HTML metadata and parsing XML timed-text into clean, usable strings.
+* **`src/components/Sidebar.tsx`** The frontend UI component built with React, featuring a modern dark-mode "Glassmorphism" design.
+* **`src/open-ai.ts`** The API bridge that handles secure communication with the Gemini 2.0 Flash-Lite model.
 
-Code snippet
+---
+
+## 🏗 Installation & Setup
+
+### 1. Prerequisites
+
+Ensure you have **Node.js** installed (v18.0.0 or higher recommended).
+
+### 2. Environment Variables
+
+Create a `.env` file in the root directory. This key is used by Webpack during the build process:
+
+```env
 GEMINI_API_KEY=your_actual_api_key_here
-3. Compile the Project
-Chrome cannot run .ts or .tsx files directly. You must compile the project into a standard JavaScript bundle.
 
-Bash
-# Install dependencies
+```
+
+### 3. Compile the Project
+
+Since Chrome cannot execute TypeScript (`.ts` / `.tsx`) directly, you must bundle the project into a standard JavaScript distribution:
+
+```bash
+# Install project dependencies
 npm install
 
-# Build the project
+# Compile and bundle the extension
 npm run build
-This will create a dist folder in your project root containing the compiled content.js, manifest.json, and assets.
 
-🧩 Loading into Chrome
-Once the build is finished, follow these steps to use the extension:
+```
 
-Open Chrome and navigate to chrome://extensions/.
+*This will generate a **`dist`** folder in your project root containing the compiled `content.js`, `manifest.json`, and required assets.*
 
-Enable Developer mode using the toggle in the top-right corner.
+---
 
-Click the Load unpacked button.
+## 🧩 Loading into Chrome
 
-Select the dist folder (not the src or root folder) from your project directory.
+Follow these steps to load the compiled extension into your browser:
 
-Open any YouTube video, and you should see the AI Video Insights card appear in the right-hand sidebar.
+1. Open Chrome and navigate to **`chrome://extensions/`**.
+2. Enable **Developer mode** via the toggle in the top-right corner.
+3. Click the **Load unpacked** button.
+4. Navigate to your project folder and select the **`dist`** directory.
+5. Open any YouTube video; the **AI Video Insights** card will automatically appear in the right-hand sidebar.
 
-📝 How it Works
-Detection: The extension monitors the URL. When a video ID is detected, it triggers the scraper.
+---
 
-Scraping: It fetches the video's internal HTML to find available caption tracks (English, Hindi, etc.).
+## 📝 How it Works
 
-Parsing: It fetches the raw XML from YouTube's timedtext API and converts it into a clean text string.
+1. **Detection:** The extension uses a Mutation Observer and URL listener to detect when you've landed on a new video page.
+2. **Scraping:** It fetches the video's internal HTML in the background to locate the `playerCaptionsTracklistRenderer`.
+3. **Parsing:** The service requests the raw XML from YouTube's `timedtext` API and strips the timestamps to create a clean text block.
+4. **AI Summary:** The processed text is sent to the Gemini API with a specialized prompt to generate structured insights and key takeaways.
 
-AI Summary: The text is sent to Gemini with a custom prompt to generate formatted insights.
+---
+
+## 🛠 Troubleshooting
+
+* **Build Issues:** If the `dist` folder doesn't update, try deleting it and running `npm run build` again.
+* **API Errors:** Check the console for `429` (Rate Limit) errors. Ensure your API key is valid in AI Studio.
+* **UI Not Showing:** YouTube frequently updates its element IDs. Ensure the selector `#secondary #related` is still valid in the current YouTube layout.
+
