@@ -55,37 +55,49 @@ async function waitForElement(elementId: string, timeoutMS = 5000): Promise<HTML
 }
 
 let previousVideoId: string | null = null;
-
 async function handleVideoChanges() {
   try {
-    if (!isYouTubeVideoPage()) {
-      return;
-    }
+    if (!isYouTubeVideoPage()) return;
 
     const videoId = getVideoIdFromUrl(window.location.href);
     if (!videoId || videoId === previousVideoId) return;
     
-    // Check if we are still on a video page before proceeding
     previousVideoId = videoId;
 
-    const [transcript, videoTitle] = await Promise.all([
-      getYouTubeTranscript(videoId),
+    // 1. Fetching logic - getYouTubeTranscript handles the XML fetch internally now
+    const [transcriptJSON, videoTitle] = await Promise.all([
+      getYouTubeTranscript(videoId), 
       getVideoTitle(videoId),
     ]);
 
-    if (transcript && videoTitle) {
-      // 'related' is the ID for the sidebar area in YouTube's layout
-      console.log("getting element to inject")
+    // 2. transcriptJSON is already a string (the result of JSON.stringify)
+    if (transcriptJSON && videoTitle) {
       const element = await waitForElement('related');
+      
       if (element) {
         console.log('Injecting sidebar...');
-        // Make sure you define injectSidebar elsewhere in this file or import it!
-        injectSidebar(videoTitle, transcript, videoId, element);
+        // Pass the transcriptJSON directly to the sidebar
+        injectSidebar(videoTitle, transcriptJSON, videoId, element);
       }
     }
   } catch (error) {
     console.log('Error in Youtube summarizer:', error);
   }
+}
+
+async function fetchAndParseTranscript(url) {
+  const response = await fetch(url);
+  const xmlText = await response.text();
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+  const textNodes = xmlDoc.getElementsByTagName("text");
+
+  return Array.from(textNodes)
+    .map(node => node.textContent)
+    .join(" ")
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
 }
 
 function observeForVideoChanges() {

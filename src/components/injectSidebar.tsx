@@ -15,7 +15,7 @@ function injectSidebar(title: string, transcript: string, videoId: string, eleme
     const container = document.createElement('div');
     container.id = 'ai-summarizer-root';
     
-   
+
     element.prepend(container);
 
    

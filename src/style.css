@@ -4,40 +4,94 @@
 }
 
 .custom-sidebar-card {
-    background-color: var(--yt-spec-raised-background);
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    padding: 16px;
-    font-family: "Roboto", "Arial", sans-serif;
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  color: #f1f1f1;
+  font-family: "Roboto", "Arial", sans-serif;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
 .sidebar-header h3 {
-    margin: 0 0 10px 0;
-    font-size: 1.6rem;
-    color: var(--yt-spec-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #fff;
+  letter-spacing: 0.5px;
 }
 
 .video-title-preview {
-    font-size: 1.2rem;
-    color: var(--yt-spec-text-secondary);
-    margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #aaa;
+  margin-bottom: 20px;
+  display: -webkit-box;
+    -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-
 .summarize-btn {
-    background-color: #065fd4;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 18px;
-    cursor: pointer;
-    font-weight: 500;
-    width: 100%;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 20px; /* YouTube Pill Style */
+  border: none;
+  background: #3ea6ff; /* YouTube Action Blue */
+  color: #0f0f0f;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
 
 .summarize-btn:hover {
-    background-color: #054fb1;
+  background: #65b8ff;
+  transform: translateY(-1px);
 }
+
 
 .summarize-btn:disabled {
     background-color: #ccc;
+    color: #717171;
+    cursor: not-allowed;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.summary-content {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e5e5e5;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Styling for the bold timecodes like **0:00-3:00** */
+.summary-content strong, 
+.summary-content b {
+  color: #3ea6ff;
+  font-weight: 600;
+}
+
+/* Custom Scrollbar */
+.summary-content::-webkit-scrollbar {
+  width: 4px;
+}
+.summary-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
 }

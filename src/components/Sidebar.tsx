@@ -17,7 +17,6 @@ const SidebarUI: React.FC<SidebarProps> = ({ title, transcript, videoId }) => {
 const [isProcessing, setIsProcessing] = useState(false);
 
 const handleSummarize = async () => {
-    // 1. Prevent "Double Tapping" the button
     if (loading || isProcessing) return; 
 
     setLoading(true);
@@ -25,22 +24,33 @@ const handleSummarize = async () => {
     setErrorMessage("");
     
     try {
-        const result = await getLLMSummary(title, transcript);
+        // 1. PARSE the transcript (since getYouTubeTranscript returns a JSON string)
+        const transcriptData = JSON.parse(transcript); 
+        
+        // 2. EXTRACT just the text content and join it
+        // This removes the "start" and "duration" noise for the AI
+        const cleanText = transcriptData
+            .map((item: any) => item.text)
+            .join(" ")
+            .replace(/\s+/g, " ") // Clean up extra spaces
+            .slice(0, 20000);    // Safety cap for token limits
+
+        // 3. SEND the cleaned text to the AI
+        const result = await getLLMSummary(title, cleanText);
         
         if (result.success) {
             setSummary(result.data);
         } else {
-            // 2. Handle the "Wait 32s" error gracefully
+            // Error handling logic
             if (result.error.includes("limit: 0")) {
-                setErrorMessage("Please link a billing account in AI Studio to use Gemini 2.0, or switch to model 1.5.");
-            } else if (result.error.includes("quota")) {
-                setErrorMessage("Rate limit hit! Please wait a minute before trying again.");
+                setErrorMessage("Please link a billing account or switch to 'gemini-2.5-flash-lite'.");
             } else {
                 setErrorMessage(result.error);
             }
         }
     } catch (err) {
-        setErrorMessage("An unexpected error occurred.");
+        console.error("Summary error:", err);
+        setErrorMessage("Failed to process transcript. Make sure it's valid JSON.");
     } finally {
         setLoading(false);
         setIsProcessing(false);
@@ -67,11 +77,16 @@ const handleSummarize = async () => {
         </div>
         )}
         
-        {summary && (
-          <div className="summary-content">
-            <p>{summary}</p>
-          </div>
-        )}
+         {summary && (
+            <div className="summary-content">
+              {/* If summary contains **0:00**, this will make it look clean */}
+              {summary.split('\n').map((line, i) => (
+                <p key={i} style={{ marginBottom: '12px' }}>
+                  {line}
+                </p>
+              ))}
+            </div>
+          )}
       </div>
     </div>
   );

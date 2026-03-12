@@ -56,18 +56,18 @@ export async function getYouTubeTranscript(videoId: string): Promise<string | nu
 
    
         const sortedCaptionTracks = sortCaptionsByLanguage(captionTracks, 'en'); // 'en' is safer for languageCode
-console.log(sortedCaptionTracks)
+
         const firstCaptionTrack = sortedCaptionTracks[0];
 
       
         const XMLTranscript = await getXMLTranscript(firstCaptionTrack.baseUrl);
-console.log(XMLTranscript);
+
         const formattedTranscript = XMLTranscript.map(item => ({
             ...item,
             start: convertSecondsToMinutes(item.start),
             duration: convertSecondsToMinutes(item.duration),
         }));
-
+        console.log(formattedTranscript);
         return JSON.stringify(formattedTranscript);
 
     } catch (error) {
@@ -79,15 +79,17 @@ console.log(XMLTranscript);
 
 async function getCaptionTracks(videoId: string, html: string): Promise<CaptionTrack[]> {
     try {
+        console.log("🔍 STEP 1: Searching HTML for 'captions' key...");
+   
         const splitHtml = html.split('"captions":');
 
         if (splitHtml.length < 2) {
             console.log("No captions available in HTML");
             return [];
         }
-
-        const captionsJsonRaw = splitHtml[1].split(',"videoDetails"')[0];
-        const captionsData = JSON.parse(captionsJsonRaw);
+        
+    const captionsJsonRaw = splitHtml[1].split(',"videoDetails"')[0];
+    const captionsData = JSON.parse(captionsJsonRaw);
 
        
         const captionTracks: CaptionTrack[] = captionsData.playerCaptionsTracklistRenderer.captionTracks.map((track: any) => ({
@@ -96,7 +98,7 @@ async function getCaptionTracks(videoId: string, html: string): Promise<CaptionT
            
             languageCode: track.languageCode
         }));
-        console.log(captionTracks);
+      
         return captionTracks;
     } catch (error) {
         console.error("Error parsing caption tracks:", error);
@@ -107,7 +109,7 @@ async function getCaptionTracks(videoId: string, html: string): Promise<CaptionT
 
 function sortCaptionsByLanguage(captionTracks: CaptionTrack[], desiredLanguage: string): CaptionTrack[] {
     captionTracks.sort((x: CaptionTrack, y: CaptionTrack) => {
-
+     
         if (x.languageCode === desiredLanguage && y.languageCode !== desiredLanguage) return -1;
         if (y.languageCode === desiredLanguage && x.languageCode !== desiredLanguage) return 1;
         
@@ -121,7 +123,7 @@ function sortCaptionsByLanguage(captionTracks: CaptionTrack[], desiredLanguage: 
 }
 
 async function getXMLTranscript(link: string): Promise<TranscriptItem[]>{
-   
+        console.log("🔍 STEP 3: Fetching XML from baseUrl...");
         const transcriptPageResponse = fetch(link);
         if(!(await transcriptPageResponse).ok){
             console.log('failed to fetch transcript page');
@@ -146,6 +148,8 @@ async function getXMLTranscript(link: string): Promise<TranscriptItem[]>{
     
     return transcript;
 }
+
+
 
 export interface TranscriptItem{
     start: string;
